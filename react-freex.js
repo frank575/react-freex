@@ -1,7 +1,7 @@
 import React, { createContext, useReducer, useCallback } from "react";
 
-const Context = createContext();
-const Provider = props => {
+const FreexContext = createContext();
+const FreexProvider = props => {
   const _store = props.store;
   let providerValue = {};
   let isSave = false;
@@ -60,7 +60,10 @@ const Provider = props => {
     });
   }
   return (
-    <Context.Provider value={providerValue}>{props.children}</Context.Provider>
+    <FreexContext.Provider value={providerValue}>
+      {props.children}
+    </FreexContext.Provider>
   );
 };
-export { Provider, Context };
+export default FreexProvider;
+export const fx = FreexContext;
