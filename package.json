@@ -1,0 +1,16 @@
+{
+  "name": "react-freex",
+  "version": "1.0.0",
+  "description": "> 最輕量簡單的 React 狀態管理",
+  "main": "react-freex.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "qaz:frank575/react-freex.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
