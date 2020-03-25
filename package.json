@@ -1,6 +1,6 @@
 {
   "name": "react-freex",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "最輕量簡單的 React 狀態管理",
   "main": "react-freex.js",
   "scripts": {
