@@ -1,10 +1,24 @@
-import React, { createContext, useReducer } from "react";
-/** v0.2.0 */
+import React, { createContext, useReducer, useEffect } from "react";
+/** v0.3.0 */
 const fx = {};
 const Providers = [];
 const FreexProvider = props => {
   return Providers.reduceRight((BP, AP) => <AP>{BP}</AP>, props.children);
 };
+class On {
+  constructor(fn, store) {
+    this._fn = fn;
+    this.store = store;
+    this._dispatch = null;
+  }
+  set dispatch(dispatch) {
+    return (this._dispatch = dispatch);
+  }
+  call(...args) {
+    const _dispatch = this._dispatch;
+    return _dispatch._fn(this._fn.apply(_dispatch.store, args));
+  }
+}
 const createProviders = store => {
   const _store = store;
   let providerValue = {};
@@ -16,7 +30,7 @@ const createProviders = store => {
     const store = _store[key];
     const state = {};
     const storage = jsonFxStorage[key] || {};
-    let _payload = [];
+    const _dispatch = new On(null, state);
     state.$$name = key;
     for (const skey in store) {
       const cur = store[skey];
@@ -30,10 +44,9 @@ const createProviders = store => {
             state.getters = [skey];
           }
         } else {
-          state[skey] = (...payload) => {
-            _payload = payload;
-            return cur;
-          };
+          const on = new On(cur, null);
+          on.dispatch = _dispatch;
+          state[skey] = on.call.bind(on);
         }
       } else {
         if (/^\$/.test(skey)) {
@@ -51,7 +64,7 @@ const createProviders = store => {
       }
     }
     fx[key] = createContext();
-    Object.defineProperty(state, "$root", {
+    Object.defineProperty(state, "$fx", {
       get() {
         return providerValue;
       },
@@ -60,9 +73,9 @@ const createProviders = store => {
     Providers.push(props => {
       const Fx = fx[key];
       let pVal = {};
-      const reFunc = (state, action) => {
-        const result = action.apply(state, _payload) || state;
+      const reFunc = (_, result) => {
         const getters = result.getters;
+        _dispatch.store = result;
         if (isSave) {
           for (const svkey in saves[key]) {
             saves[key][svkey] = result[svkey];
@@ -79,7 +92,14 @@ const createProviders = store => {
       const [reducer, dispatch] = useReducer(reFunc, state);
       providerValue[key] = reducer;
       pVal = providerValue[key];
-      pVal.dispatch = dispatch;
+      useEffect(() => {
+        pVal.$set = (key, val) =>
+          dispatch({
+            ...pVal,
+            [key]: val
+          });
+        _dispatch._fn = dispatch;
+      }, []);
       return <Fx.Provider value={pVal}>{props.children}</Fx.Provider>;
     });
   }
