@@ -1,5 +1,5 @@
 import React, { createContext, useReducer, useEffect } from "react";
-/** v0.3.0 */
+/** v0.3.1 */
 const fx = {};
 const Providers = [];
 const FreexProvider = props => {
@@ -31,17 +31,17 @@ const createProviders = store => {
     const state = {};
     const storage = jsonFxStorage[key] || {};
     const _dispatch = new On(null, state);
-    state.$$name = key;
     for (const skey in store) {
       const cur = store[skey];
       if (typeof cur === "function") {
         if (/^_{2}/.test(skey)) {
-          state[skey] = cur;
-          state[skey.replace(/^_{2}/, "")] = cur.call(state);
-          if (state.getters) {
-            state.getters.push(skey);
+          const rpSkey = skey.replace(/^_{2}/, "");
+          state[rpSkey] = cur.call(state);
+          if (state.__getters) {
+            state.__getters[rpSkey] = cur;
           } else {
-            state.getters = [skey];
+            state.__getters = {};
+            state.__getters[rpSkey] = cur;
           }
         } else {
           const on = new On(cur, null);
@@ -74,7 +74,7 @@ const createProviders = store => {
       const Fx = fx[key];
       let pVal = {};
       const reFunc = (_, result) => {
-        const getters = result.getters;
+        const getters = result.__getters;
         _dispatch.store = result;
         if (isSave) {
           for (const svkey in saves[key]) {
@@ -83,9 +83,10 @@ const createProviders = store => {
           localStorage.setItem("fx", JSON.stringify(saves));
         }
         if (getters) {
-          getters.forEach(e => {
-            result[e.replace(/^_{2}/, "")] = result[e].call(result);
-          });
+          for (const key in getters) {
+            const rpKey = key.replace(/^_{2}/, "");
+            result[rpKey] = getters[rpKey].call(result);
+          }
         }
         return result;
       };
