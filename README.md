@@ -22,8 +22,8 @@
 
 #### 更新日誌：
 
-v0.3.3 -- 代碼優化
-v0.3.2 -- 更新 README.md
+v0.3.3 -- 代碼優化  
+v0.3.2 -- 更新 README.md  
 v0.3.1 -- 更新 README.md 及 getters 的資料存放位置  
 v0.3.0 -- 新增 \$set 方法，及性能小優化，支持自動 dispatch  
 v0.2.1 -- 更新 README.md  
