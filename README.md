@@ -1,6 +1,6 @@
 # react-freex
 
-> 最輕量簡單的 React 狀態管理
+> 最輕量簡單的 React 狀態管理  
 > Lightest and simplest React state management
 
 [![Edit react-freex on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/react-freex-h5dk6)
